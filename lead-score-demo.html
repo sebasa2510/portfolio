@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead Scoring Agent — Interactive Demo</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161a21;
+    --panel-2: #1c2129;
+    --line: #272d38;
+    --text: #e8eaed;
+    --muted: #939cab;
+    --accent: #6ea8fe;
+    --a: #4ade80;
+    --b: #a3e635;
+    --c: #fbbf24;
+    --d: #fb923c;
+    --f: #f87171;
+    --radius: 10px;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); font-size: 15px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 40px 24px 72px; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 32px; }
+  h1 { font-size: 25px; margin: 0 0 8px; letter-spacing: -0.02em; font-weight: 600; }
+  .sub { color: var(--muted); max-width: 68ch; margin: 0; }
+  .tag {
+    display: inline-block; font-family: var(--mono); font-size: 11px;
+    color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+    padding: 2px 10px; margin: 0 6px 6px 0; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px; align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 18px; font-weight: 600; }
+  label { display: block; font-size: 12px; color: var(--muted); margin: 0 0 5px; letter-spacing: 0.02em; }
+  .field { margin-bottom: 14px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  input, select, textarea {
+    width: 100%; background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--line); border-radius: 7px; padding: 9px 11px;
+    font-family: inherit; font-size: 14px; outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 66px; }
+  .check { display: flex; gap: 10px; align-items: flex-start; margin: 18px 0 6px; }
+  .check input { width: auto; margin-top: 3px; flex: none; }
+  .check span { font-size: 13px; color: var(--muted); }
+  button {
+    width: 100%; margin-top: 16px; padding: 11px; font-family: inherit; font-size: 14px;
+    font-weight: 600; border-radius: 7px; border: 1px solid var(--accent);
+    background: var(--accent); color: #0b0e14; cursor: pointer;
+  }
+  button.ghost { background: transparent; color: var(--muted); border-color: var(--line); font-weight: 500; }
+  .presets { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+  .presets button {
+    width: auto; margin: 0; padding: 6px 11px; font-size: 12px; font-weight: 500;
+    background: transparent; color: var(--muted); border-color: var(--line);
+  }
+  .presets button:hover { color: var(--text); border-color: var(--muted); }
+  .verdict { text-align: center; padding: 4px 0 20px; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+  .grade {
+    font-family: var(--mono); font-size: 78px; line-height: 1; font-weight: 700;
+    letter-spacing: -0.04em; margin-bottom: 6px;
+  }
+  .score { font-family: var(--mono); font-size: 15px; color: var(--muted); }
+  .pill {
+    display: inline-block; font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.07em; border-radius: 999px; padding: 3px 11px; border: 1px solid currentColor; margin-top: 12px;
+  }
+  .bar-row { margin-bottom: 15px; }
+  .bar-head { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .bar-head .n { color: var(--muted); }
+  .bar-head .v { font-family: var(--mono); }
+  .track { height: 5px; background: var(--panel-2); border-radius: 3px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 3px; }
+  h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 24px 0 10px; font-weight: 600; }
+  ul { margin: 0; padding-left: 18px; }
+  li { margin-bottom: 7px; }
+  .flag { border-left: 2px solid var(--c); padding: 9px 13px; background: var(--panel-2); border-radius: 0 6px 6px 0; margin-bottom: 8px; font-size: 13px; }
+  .flag.bad { border-color: var(--f); }
+  .flag.good { border-color: var(--a); }
+  .just { font-size: 14px; color: var(--text); }
+  .query {
+    font-family: var(--mono); font-size: 12.5px; background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 7px; padding: 12px; color: var(--accent);
+  }
+  details { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 16px; }
+  summary { cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; }
+  td.n { font-family: var(--mono); text-align: right; white-space: nowrap; }
+  .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 40px 12px; }
+  .note { font-size: 12px; color: var(--muted); margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Lead Qualification &amp; Scoring Agent</h1>
+    <p class="sub">Interactive demo of the scoring engine specified for a media-agency client. Enter a prospect or load a preset to see the agent apply its ICP filters, weighted scoring model, and routing rules in real time.</p>
+    <div style="margin-top:16px">
+      <span class="tag">A&ndash;F grading</span>
+      <span class="tag">35 / 30 / 25 / 10 weights</span>
+      <span class="tag">Consent gated</span>
+      <span class="tag">Human-in-the-loop</span>
+      <span class="tag">No outbound send</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Inbound inquiry</h2>
+      <div class="presets" id="presets"></div>
+
+      <div class="row">
+        <div class="field">
+          <label for="name">Contact name</label>
+          <input id="name" type="text" placeholder="Jordan Ellis">
+        </div>
+        <div class="field">
+          <label for="email">Work email</label>
+          <input id="email" type="email" placeholder="jordan@studio.com">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="company">Company</label>
+          <input id="company" type="text" placeholder="Northlight Studio">
+        </div>
+        <div class="field">
+          <label for="title">Title</label>
+          <select id="title">
+            <option value="c_level">Founder / Owner / C-suite</option>
+            <option value="vp">VP / Director / Head of</option>
+            <option value="manager">Manager</option>
+            <option value="ic">Individual contributor</option>
+            <option value="unknown" selected>Unknown / not stated</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="industry">Industry</label>
+          <select id="industry">
+            <option value="agency">Media agency</option>
+            <option value="production">Boutique production house</option>
+            <option value="lifestyle">Lifestyle marketing firm</option>
+            <option value="other">Other / outside ICP</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="headcount">Headcount</label>
+          <select id="headcount">
+            <option value="1-4">1&ndash;4</option>
+            <option value="5-50" selected>5&ndash;50</option>
+            <option value="51-200">51&ndash;200</option>
+            <option value="200+">200+</option>
+            <option value="unknown">Unknown</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="revenue">Verified annual revenue (USD)</label>
+          <input id="revenue" type="number" min="0" step="100000" placeholder="8000000">
+        </div>
+        <div class="field">
+          <label for="budget">Stated project budget (USD)</label>
+          <input id="budget" type="number" min="0" step="1000" placeholder="120000">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="region">Region</label>
+          <select id="region">
+            <option value="miami">Miami / South Florida</option>
+            <option value="us" selected>Rest of United States</option>
+            <option value="na">Rest of North America</option>
+            <option value="outside">Outside North America</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="timeline">Planned start</label>
+          <select id="timeline">
+            <option value="0-30">0&ndash;30 days</option>
+            <option value="31-90" selected>31&ndash;90 days</option>
+            <option value="91-180">91&ndash;180 days</option>
+            <option value="180+">Beyond 6 months</option>
+            <option value="unknown">Unknown / exploring</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="service">Service requested</label>
+        <select id="service">
+          <option value="ams">Custom Agency Management Platform</option>
+          <option value="workflow">Specialized workflow development</option>
+          <option value="social">Basic social media posting</option>
+          <option value="design">Graphic design</option>
+          <option value="other">Something else</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="problem">Stated problem in their own words</label>
+        <textarea id="problem" placeholder="We run six client projects in separate tools and our account managers update status by hand every Friday..."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="idle">Days since last interaction</label>
+        <input id="idle" type="number" min="0" value="0">
+      </div>
+
+      <div class="check">
+        <input type="checkbox" id="consent">
+        <span>Prospect checked the opt-in consent box on the intake form. Without it the agent rejects the submission and persists no personally identifiable information.</span>
+      </div>
+
+      <button id="run">Score this lead</button>
+      <button class="ghost" id="clear" style="margin-top:8px">Reset</button>
+    </div>
+
+    <div class="card" id="out">
+      <div class="empty">Score a lead to see its grade, breakdown, and routing decision.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:28px">
+    <details>
+      <summary>How the scoring model works</summary>
+      <p class="note" style="margin-top:14px">The client specification defines the four criteria, their weights, and the grade bands. It does not define how each criterion is scored internally, so the sub-scoring rubric below is a reasonable implementation of that intent and is shown here in full rather than hidden.</p>
+      <table>
+        <thead><tr><th>Criterion</th><th>Weight</th><th>How the sub-score is derived</th></tr></thead>
+        <tbody>
+          <tr><td>Verified budget fit</td><td class="n">35%</td><td>Stated budget cross-referenced against verified revenue. A budget at or under 15% of annual revenue scores full marks; above that the score drops and a risk flag is raised. If revenue is unknown the budget is treated as self-reported and scores lower. Missing budget scores lowest of all and forces a provisional grade.</td></tr>
+          <tr><td>Purchasing authority</td><td class="n">30%</td><td>Derived from job title: founder / C-suite highest, then VP and Director, then Manager, then individual contributor. An unknown title is treated as a failed enrichment lookup, which caps the lead at grade C per the specification.</td></tr>
+          <tr><td>Immediate need</td><td class="n">25%</td><td>Service-scope match plus whether a concrete operational problem was described. A clear platform or workflow request with a stated pain scores full marks; a match with no stated problem scores partially.</td></tr>
+          <tr><td>Timeline urgency</td><td class="n">10%</td><td>A 31&ndash;90 day start earns full points as specified. Shorter starts score slightly lower, longer exploratory timelines score progressively less, and anything beyond six months is routed to the educational nurture track.</td></tr>
+        </tbody>
+      </table>
+      <p class="note"><strong>Grade bands.</strong> A &ge; 80 and only when budget, authority and need are all confirmed. B 65&ndash;79. C 50&ndash;64, or any critical data missing. D 35&ndash;49. F below 35, or any auto-disqualification rule.</p>
+      <p class="note"><strong>Auto-disqualification.</strong> Basic social media posting, low-budget graphic design, and any non-platform request are rejected before scoring begins.</p>
+      <p class="note"><strong>This is a demonstration.</strong> The competitor and disposable-domain registries in this page are illustrative fixtures, not a client's real data. No information entered here is transmitted anywhere or stored.</p>
+    </details>
+  </div>
+</div>
+
+<script>
+var GRADE_ORDER = ['A', 'B', 'C', 'D', 'F'];
+var WEIGHTS = { budget: 35, authority: 30, need: 25, timeline: 10 };
+
+var DISPOSABLE = ['mailinator.com', 'guerrillamail.com', '10minutemail.com', 'tempmail.com', 'yopmail.com', 'throwawaymail.com'];
+var COMPETITOR = ['rivalams-demo.com', 'competitor-example.com'];
+
+var PRESETS = [
+  { label: 'Qualified A lead', data: {
+    name: 'Jordan Ellis', email: 'jordan@northlightstudio.com', company: 'Northlight Studio',
+    title: 'c_level', industry: 'agency', headcount: '5-50', revenue: 8000000, budget: 120000,
+    region: 'miami', timeline: '31-90', service: 'ams', idle: 0, consent: true,
+    problem: 'We run six client projects in separate tools and our account managers update status by hand every Friday. We need one platform to track deliverables and approvals across the whole roster.' } },
+  { label: 'Out of scope', data: {
+    name: 'Casey Nolan', email: 'casey@localbiz.com', company: 'Local Biz', title: 'ic',
+    industry: 'other', headcount: '1-4', revenue: 90000, budget: 1500, region: 'us', timeline: '0-30',
+    service: 'social', idle: 0, consent: true,
+    problem: 'Looking for someone to post to our Instagram a few times a week.' } },
+  { label: 'Missing data', data: {
+    name: 'Avery Quinn', email: 'avery@harborcollective.com', company: 'Harbor Collective',
+    title: 'unknown', industry: 'production', headcount: '5-50', revenue: '', budget: '',
+    region: 'us', timeline: 'unknown', service: 'workflow', idle: 0, consent: true,
+    problem: 'Interested in custom workflow development for our production pipeline.' } },
+  { label: 'No consent', data: {
+    name: 'Riley Shaw', email: 'riley@meridianmedia.com', company: 'Meridian Media',
+    title: 'vp', industry: 'agency', headcount: '5-50', revenue: 12000000, budget: 200000,
+    region: 'us', timeline: '31-90', service: 'ams', idle: 0, consent: false,
+    problem: 'Our delivery process is disorganized across teams and we need a management platform.' } },
+  { label: 'Disposable domain', data: {
+    name: 'Dana Cruz', email: 'dana@guerrillamail.com', company: 'Unknown', title: 'manager',
+    industry: 'agency', headcount: '5-50', revenue: 5000000, budget: 80000, region: 'us',
+    timeline: '31-90', service: 'ams', idle: 0, consent: true,
+    problem: 'Need a custom platform to manage client deliverables and billing.' } },
+  { label: 'Decayed lead', data: {
+    name: 'Morgan Reed', email: 'morgan@fieldstonecreative.com', company: 'Fieldstone Creative',
+    title: 'vp', industry: 'lifestyle', headcount: '5-50', revenue: 6000000, budget: 95000,
+    region: 'us', timeline: '91-180', service: 'workflow', idle: 45, consent: true,
+    problem: 'Our campaign reporting is manual and we want to automate our client workflow.' } }
+];
+
+function domainOf(email) {
+  var parts = String(email || '').split('@');
+  return parts.length === 2 ? parts[1].toLowerCase() : '';
+}
+
+function scoreBudget(v) {
+  var budget = num(v.budget), revenue = num(v.revenue), headcount = v.headcount;
+  var notes = [], score;
+  if (budget === null || budget <= 0) {
+    score = 10;
+    notes.push('No budget stated. Treated as a missing critical data point, which forces a provisional grade.');
+  } else if (revenue !== null && revenue > 0) {
+    var share = budget / revenue;
+    if (share <= 0.15) {
+      score = 100;
+      notes.push('Stated budget of $' + money(budget) + ' is ' + pct(share) + ' of verified annual revenue of $' + money(revenue) + ', within the 15% sanity threshold.');
+    } else {
+      score = 50;
+      notes.push('Stated budget of $' + money(budget) + ' is ' + pct(share) + ' of verified annual revenue of $' + money(revenue) + ', above the 15% threshold. Flagged as a risk factor for manual review.');
+    }
+    if (headcount !== '5-50') notes.push('Headcount is ' + headcount + ', outside the 5\u201350 target band, so the budget was not cross-checked against a comparable company profile.');
+  } else {
+    score = 70;
+    notes.push('Annual revenue is unverified, so the stated budget of $' + money(budget) + ' is accepted as self-reported and could not be confirmed.');
+    if (headcount === '5-50') notes.push('Headcount sits inside the 5\u201350 band, which is consistent with the stated budget.');
+  }
+  return { score: score, notes: notes, confirmed: revenue !== null && revenue > 0 && budget > 0 && (budget / revenue) <= 0.15 };
+}
+
+function scoreAuthority(v) {
+  var map = { c_level: 100, vp: 80, manager: 55, ic: 30, unknown: 0 };
+  var labels = { c_level: 'founder or C-suite', vp: 'VP or Director', manager: 'manager', ic: 'individual contributor', unknown: 'not stated' };
+  var score = map[v.title];
+  var notes = ['Title is ' + labels[v.title] + ', mapped to ' + score + ' on the authority scale.'];
+  if (v.title === 'unknown') {
+    notes.push('An unknown title is treated as a failed enrichment lookup. Per the specification the lead is capped at grade C and flagged for manual review.');
+  }
+  return { score: score, notes: notes, confirmed: v.title !== 'unknown', enrichmentFailed: v.title === 'unknown' };
+}
+
+function scoreNeed(v) {
+  var problem = String(v.problem || '').trim();
+  var words = problem ? problem.split(/\s+/).length : 0;
+  var inScope = (v.service === 'ams' || v.service === 'workflow');
+  var notes = [];
+  var score;
+  if (!inScope) {
+    score = 0;
+    notes.push('Requested service falls outside the custom platform and workflow development scope.');
+  } else if (words >= 25) {
+    score = 100;
+    notes.push('Request matches the platform scope and describes a specific operational problem in detail.');
+  } else if (words >= 8) {
+    score = 80;
+    notes.push('Request matches the platform scope and states a problem, though in broad terms.');
+  } else if (words > 0) {
+    score = 55;
+    notes.push('Request matches the platform scope but the stated problem is too vague to confirm real urgency.');
+  } else {
+    score = 30;
+    notes.push('Request matches the platform scope but no problem was described at all.');
+  }
+  return { score: score, notes: notes, confirmed: inScope && words >= 8 };
+}
+
+function scoreTimeline(v) {
+  var map = { '0-30': 90, '31-90': 100, '91-180': 45, '180+': 10, unknown: 25 };
+  var labels = { '0-30': '0\u201330 days', '31-90': '31\u201390 days', '91-180': '91\u2013180 days', '180+': 'beyond 6 months', unknown: 'not stated' };
+  var score = map[v.timeline];
+  var notes = ['Planned start is ' + labels[v.timeline] + ', worth ' + score + ' timeline points.'];
+  if (v.timeline === '180+') notes.push('An exploratory timeline beyond six months downgrades the lead to the educational nurture track regardless of score.');
+  if (v.timeline === 'unknown') notes.push('No timeline given, so urgency cannot be established and the score is provisional.');
+  return { score: score, notes: notes, exploratory: v.timeline === '180+' };
+}
+
+function gradeFor(total, gates, flags) {
+  if (flags.autoFail) return { grade: 'F', reason: 'Auto-disqualification rule triggered before scoring.' };
+  if (total >= 80 && gates.budgetConfirmed && gates.authorityConfirmed && gates.needConfirmed) {
+    return { grade: 'A', reason: 'Score of ' + total + ' is at or above 80 with budget, authority and need all confirmed.' };
+  }
+  if (total >= 80) {
+    return { grade: 'B', reason: 'Score of ' + total + ' clears 80 but the A grade requires confirmed budget, decision-maker authority and immediate need, and at least one is unconfirmed.' };
+  }
+  if (flags.enrichmentFailed || flags.missingCritical) {
+    return { grade: 'C', reason: flags.enrichmentFailed
+      ? 'Enrichment returned nothing usable, so the lead is capped at grade C and held for manual review.'
+      : 'Critical data is missing, so a provisional grade C is assigned pending a targeted follow-up.' };
+  }
+  if (total >= 65) return { grade: 'B', reason: 'Score of ' + total + ' falls in the 65\u201379 band: high authority or confirmed need with funding still unconfirmed.' };
+  if (total >= 50) return { grade: 'C', reason: 'Score of ' + total + ' falls in the 50\u201364 band, indicating missing critical data or conflicting signals.' };
+  if (total >= 35) return { grade: 'D', reason: 'Score of ' + total + ' falls in the 35\u201349 band, indicating minimal fit with weak authority and a vague need.' };
+  return { grade: 'F', reason: 'Score of ' + total + ' is below 35.' };
+}
+
+function routingFor(grade, flags) {
+  if (flags.quarantine) return 'Quarantine queue. No grading performed and no personally identifiable information persisted.';
+  if (!flags.consent) return 'Rejected at the consent gate. The submission is logged as a non-identifying event and no contact details are stored.';
+
+  var clearance = flags.manualClearance
+    ? ' Outreach is blocked until an administrator manually clears the region.'
+    : '';
+
+  if (grade === 'F') return 'Archived with an automated rejection tag. Retained for 90 days, then moved to cold storage.' + clearance;
+  if (grade === 'D') return 'Archived with a newsletter nurture tag.' + clearance;
+  if (grade === 'C') return 'Held for manual review or the nurture track. A targeted data-collection query is generated for the next human touch and the lead is re-evaluated every 60 days.' + clearance;
+
+  if (flags.nurture) {
+    return 'Downgraded to the educational nurture track despite scoring ' + grade + ', because the timeline is exploratory rather than committed. No outreach is dispatched until a firm start date emerges; the lead is re-evaluated every 60 days.' + clearance;
+  }
+
+  if (grade === 'A') {
+    return 'Straight into the pipeline by round-robin assignment across the account executive roster. A webhook alert fires to the internal sales channel and an email goes to the assigned account executive within 60 seconds, with a pre-drafted outreach response attached for human review and sending.' + clearance;
+  }
+  return 'Straight into the pipeline by round-robin assignment across the account executive roster. Same alerting flow as an A grade, with a pre-drafted response for human review and sending.' + clearance;
+}
+
+function dataQueryFor(v, flags) {
+  var q = [];
+  if (!num(v.budget)) q.push('What budget range has your team approved for this project?');
+  if (!num(v.revenue)) q.push('Roughly how large is the company in annual revenue?');
+  if (v.title === 'unknown') q.push('Who is the decision maker for platform purchases on your team?');
+  if (v.timeline === 'unknown') q.push('What is your target start date for going live?');
+  if (!String(v.problem || '').trim()) q.push('Can you describe the specific workflow that is breaking down today?');
+  if (flags.nurture) q.push('Is there a specific trigger, such as a lost contract or a headcount change, that would move this to a firm timeline?');
+  return q;
+}
+
+function num(v) {
+  if (v === '' || v === null || v === undefined) return null;
+  var n = parseFloat(String(v).replace(/[^0-9.\-]/g, ''));
+  return isNaN(n) ? null : n;
+}
+function money(n) { return Math.round(n).toLocaleString('en-US'); }
+function pct(n) { return (n * 100).toFixed(1) + '%'; }
+function esc(s) {
+  return String(s === null || s === undefined ? '' : s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  });
+}
+function decay(grade) {
+  var i = GRADE_ORDER.indexOf(grade);
+  if (i < 0 || i >= GRADE_ORDER.length - 1) return grade;
+  return GRADE_ORDER[i + 1];
+}
+
+function evaluate(v) {
+  var flags = { consent: !!v.consent, quarantine: false, autoFail: false, nurture: false, missingCritical: false, enrichmentFailed: false };
+  var routingDomain = domainOf(v.email);
+
+  if (DISPOSABLE.indexOf(routingDomain) !== -1) flags.quarantine = true;
+  if (COMPETITOR.indexOf(routingDomain) !== -1) flags.quarantine = true;
+
+  var blocking = [];
+  if (!flags.consent) blocking.push('no_consent');
+  if (flags.quarantine) blocking.push(COMPETITOR.indexOf(routingDomain) !== -1 ? 'competitor_domain' : 'disposable_domain');
+
+  if (!flags.consent || flags.quarantine) {
+    return { blocked: true, reason: flags.quarantine ? 'quarantine' : 'consent', flags: flags, domain: routingDomain };
+  }
+
+  var scopeLabels = { social: 'basic social media posting', design: 'low-budget graphic design', other: 'a non-platform service' };
+  if (v.service === 'social' || v.service === 'design' || v.service === 'other') {
+    flags.autoFail = true;
+    return {
+      blocked: true, reason: 'autoFail', flags: flags, domain: routingDomain,
+      detail: 'Request for ' + scopeLabels[v.service] + ' is outside the custom platform and workflow development scope, so the lead is auto-disqualified before scoring.'
+    };
+  }
+
+  var b = scoreBudget(v), a = scoreAuthority(v), n = scoreNeed(v), t = scoreTimeline(v);
+  var parts = [
+    { key: 'Verified budget fit', weight: WEIGHTS.budget, ...b },
+    { key: 'Purchasing authority', weight: WEIGHTS.authority, ...a },
+    { key: 'Immediate need', weight: WEIGHTS.need, ...n },
+    { key: 'Timeline urgency', weight: WEIGHTS.timeline, ...t }
+  ];
+  var total = Math.round(parts.reduce(function (s, p) { return s + (p.score / 100) * p.weight; }, 0));
+
+  flags.enrichmentFailed = !!a.enrichmentFailed;
+  flags.nurture = !!t.exploratory;
+  flags.missingCritical = !b.confirmed || n.score < 55;
+  if (v.region === 'outside') flags.manualClearance = true;
+  if (b.notes.join(' ').indexOf('above the 15%') !== -1) flags.riskBudget = true;
+  if (v.industry === 'other') flags.icpIndustry = true;
+  if (v.headcount !== '5-50' && v.headcount !== 'unknown') flags.icpHeadcount = true;
+  if (v.headcount === 'unknown') flags.missingCritical = true;
+  if (v.region === 'na') flags.manualClearance = false;
+
+  var g = gradeFor(total, {
+    budgetConfirmed: b.confirmed,
+    authorityConfirmed: a.confirmed,
+    needConfirmed: n.confirmed
+  }, flags);
+
+  var original = g.grade, decayed = false;
+  var idle = num(v.idle) || 0;
+  if (idle >= 30 && original !== 'F' && !flags.missingCritical && !flags.enrichmentFailed) {
+    g.grade = decay(original);
+    g.reason = original + ' grade reduced by one letter to ' + g.grade + ' after ' + idle + ' days without engagement, moving the lead into the re-engagement pool.';
+    decayed = true;
+  }
+
+  return {
+    blocked: false, parts: parts, total: total, grade: g.grade, reason: g.reason,
+    originalGrade: original, decayed: decayed, idle: idle,
+    flags: flags, routing: routingFor(g.grade, flags), query: dataQueryFor(v, flags), lead: v
+  };
+}
+
+var GRADE_COLOR = { A: 'var(--a)', B: 'var(--b)', C: 'var(--c)', D: 'var(--d)', F: 'var(--f)' };
+
+function render(r) {
+  var out = document.getElementById('out');
+  if (r.blocked) return renderBlocked(r, out);
+
+  var rows = r.parts.map(function (p) {
+    return '<div class="bar-row">'
+      + '<div class="bar-head"><span class="n">' + esc(p.key) + ' <span style="opacity:.5">&middot; ' + p.weight + '%</span></span>'
+      + '<span class="v">' + p.score + '/100 &rarr; ' + (p.score / 100 * p.weight).toFixed(1) + ' pts</span></div>'
+      + '<div class="track"><div class="fill" style="width:' + p.score + '%;background:' + GRADE_COLOR[r.grade] + '"></div></div>'
+      + '</div>';
+  }).join('');
+
+  var notes = r.parts.reduce(function (acc, p) { return acc.concat(p.notes.map(function (n) { return { c: p.key, n: n }; })); }, []);
+
+  var flags = [];
+  if (r.flags.riskBudget) flags.push({ k: 'bad', t: 'Risk flag: stated budget exceeds 15% of estimated annual revenue. Held for manual review.' });
+  if (r.flags.icpIndustry) flags.push({ k: '', t: 'Industry falls outside the target ICP of media agencies, boutique production houses and lifestyle marketing firms.' });
+  if (r.flags.icpHeadcount) flags.push({ k: '', t: 'Headcount is outside the 5\u201350 employee target band.' });
+  if (r.flags.missingCritical) flags.push({ k: '', t: 'Critical data missing \u2014 a targeted follow-up question has been generated.' });
+  if (r.flags.enrichmentFailed) flags.push({ k: '', t: 'Enrichment returned nothing usable \u2014 grade capped at C pending manual review.' });
+  if (r.flags.nurture) flags.push({ k: 'good', t: 'Exploratory timeline beyond six months \u2014 routed to the educational nurture track.' });
+  if (r.flags.manualClearance) flags.push({ k: '', t: 'Prospect is outside North America \u2014 scored in parallel, but outreach is blocked until manually cleared.' });
+  if (r.decayed) flags.push({ k: '', t: 'Score decayed one letter grade after ' + r.idle + ' days of inactivity.' });
+  if (r.lead.region === 'miami') flags.push({ k: 'good', t: 'Miami / South Florida \u2014 top priority region.' });
+
+  out.innerHTML = ''
+    + '<div class="verdict">'
+    +   '<div class="grade" style="color:' + GRADE_COLOR[r.grade] + '">' + r.grade + '</div>'
+    +   '<div class="score">' + r.total + ' / 100 composite'
+    +     (r.decayed ? ' &middot; adjusted from ' + r.originalGrade : '') + '</div>'
+    +   '<div class="pill" style="color:' + GRADE_COLOR[r.grade] + '">grade ' + r.grade + '</div>'
+    + '</div>'
+    + '<h3>Score breakdown</h3>' + rows
+    + '<h3>Grade justification</h3><p class="just">' + esc(r.reason) + '</p>'
+    + (flags.length ? '<h3>Flags</h3>' + flags.map(function (f) { return '<div class="flag ' + f.k + '">' + esc(f.t) + '</div>'; }).join('') : '')
+    + '<h3>Routing</h3><p class="just">' + esc(r.routing) + '</p>'
+    + '<h3>Notes behind each score</h3><ul>' + notes.map(function (n) {
+        return '<li><span style="color:var(--muted)">' + esc(n.c) + ':</span> ' + esc(n.n) + '</li>';
+      }).join('') + '</ul>'
+    + (r.query.length ? '<h3>Targeted follow-up question</h3><div class="query">' + r.query.map(esc).join('<br>') + '</div>' : '')
+    + '<p class="note">The agent drafts and routes. It never sends anything to the prospect \u2014 every outbound message is sent by a human account executive.</p>';
+}
+
+function renderBlocked(r, out) {
+  var head, body;
+  if (r.reason === 'consent') {
+    head = 'Rejected'; body = 'The intake form carried no opt-in consent. The agent rejects the submission, logs a non-identifying event, and persists no contact details, company name, or any other personally identifiable information.';
+  } else if (r.reason === 'quarantine') {
+    head = 'Quarantine';
+    body = 'The sending domain <strong>' + esc(r.domain) + '</strong> matched the ' + (COMPETITOR.indexOf(r.domain) !== -1 ? 'competitor registry' : 'disposable email registry')
+         + '. The submission is diverted to the quarantine queue with no grading performed and no personally identifiable information stored.';
+  } else {
+    head = 'Grade F';
+    body = r.detail;
+  }
+  out.innerHTML = ''
+    + '<div class="verdict"><div class="grade" style="color:var(--f)">' + (r.reason === 'autoFail' ? 'F' : head) + '</div>'
+    + '<div class="score">' + (r.reason === 'autoFail' ? 'auto-disqualified' : 'halted before scoring') + '</div>'
+    + '<div class="pill" style="color:var(--f)">' + esc(head) + '</div></div>'
+    + '<h3>Decision</h3><p class="just">' + body + '</p>'
+    + '<h3>Routing</h3><p class="just">' + esc(routingFor(r.reason === 'autoFail' ? 'F' : 'F', r.flags)) + '</p>'
+    + '<p class="note">Nothing was scored because the specification requires these checks to run before any scoring takes place.</p>';
+}
+
+function readForm() {
+  return {
+    name: document.getElementById('name').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    company: document.getElementById('company').value.trim(),
+    title: document.getElementById('title').value,
+    industry: document.getElementById('industry').value,
+    headcount: document.getElementById('headcount').value,
+    revenue: document.getElementById('revenue').value,
+    budget: document.getElementById('budget').value,
+    region: document.getElementById('region').value,
+    timeline: document.getElementById('timeline').value,
+    service: document.getElementById('service').value,
+    problem: document.getElementById('problem').value.trim(),
+    idle: document.getElementById('idle').value,
+    consent: document.getElementById('consent').checked
+  };
+}
+
+function fillForm(d) {
+  Object.keys(d).forEach(function (k) {
+    var el = document.getElementById(k);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!d[k];
+    else el.value = d[k];
+  });
+}
+
+var presetWrap = document.getElementById('presets');
+PRESETS.forEach(function (p) {
+  var b = document.createElement('button');
+  b.textContent = p.label;
+  b.addEventListener('click', function () { fillForm(p.data); score(); });
+  presetWrap.appendChild(b);
+});
+
+function score() { render(evaluate(readForm())); }
+
+document.getElementById('run').addEventListener('click', score);
+document.getElementById('clear').addEventListener('click', function () {
+  fillForm({
+    name: '', email: '', company: '', revenue: '', budget: '', problem: '',
+    title: 'unknown', industry: 'agency', headcount: '5-50', region: 'us',
+    timeline: '31-90', service: 'ams', idle: 0, consent: false
+  });
+  document.getElementById('out').innerHTML = '<div class="empty">Score a lead to see its grade, breakdown, and routing decision.</div>';
+});
+</script>
+</body>
+</html>

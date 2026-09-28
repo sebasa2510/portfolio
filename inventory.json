@@ -1,0 +1,133 @@
+{
+  "_comment": "Portfolio inventory for Lab 02. Consumed by the Session 05 site builder. live_url is filled in once each project is deployed - placeholders are marked TODO.",
+
+  "owner": {
+    "name": "TODO: your full name",
+    "title": "Tax Professional & Junior Software Developer",
+    "bio": "I'm a tax professional and junior software developer working where finance meets technology. Since 2022 I've handled tax preparation, compliance, and client service, and I'm now applying that domain knowledge to software — building reliable, user-centered tools for real business problems.",
+    "bio_sentences": 3,
+    "location": "TODO: city, state"
+  },
+
+  "brand": {
+    "_comment": "Populate from the Session 05 brand kit review. Left null so the site builder can fall back without inventing a palette.",
+    "colors": null,
+    "fonts": null
+  },
+
+  "projects": [
+    {
+      "id": "lead-scoring-agent",
+      "title": "Lead Qualification & Scoring Agent",
+      "order": 1,
+      "featured": true,
+      "client": "WholsDésir — The Lifestyle Connoisseur (media agency, custom Agency Management Platform software)",
+      "description": "Designed a lead scoring agent that grades inbound prospects A through F on a weighted model of verified budget (35%), purchasing authority (30%), immediate need (25%) and timeline urgency (10%), routing top-tier leads to account executives within 60 seconds — while a consent gate, competitor screening and a human-in-the-loop rule let it draft outreach but never send it.",
+      "live_url": "TODO: publish - demo is built and ready at portfolio/lead-score-demo.html",
+      "source_url": null,
+      "demo": {
+        "file": "portfolio/lead-score-demo.html",
+        "status": "built and logic-tested, not yet published",
+        "note": "Single-file, zero-dependency page. Implements the spec's consent gate, quarantine screening, ICP filters, 35/30/25/10 weighted scoring, A-F bands, score decay and routing rules. Six presets verified against expected grades. Opens straight in a browser or serves as-is from GitHub Pages or Netlify.",
+        "presets": [
+          "Qualified A lead",
+          "Out of scope (auto-disqualified)",
+          "Missing data (provisional C)",
+          "No consent (rejected)",
+          "Disposable domain (quarantined)",
+          "Decayed lead (grade downgraded after 30 days idle)"
+        ]
+      },
+      "status": "specification complete, not yet implemented",
+      "tags": ["AI agent", "Lead scoring", "System design", "Human-in-the-loop", "Compliance", "PostgreSQL", "Prisma"],
+      "highlights": [
+        "Weighted A–F grading: 35% verified budget, 30% authority, 25% need, 10% timeline",
+        "Human-in-the-loop by design — the agent scores and pre-drafts, all prospect contact stays with a human AE",
+        "Consent gating: unconsented submissions are rejected and persist no personally identifiable information",
+        "Competitor, disposable-domain and bot-pattern screening routes to a quarantine queue",
+        "Score decay — one letter grade after 30 days inactive; C-grade prospects re-evaluated every 60 days",
+        "Full Prisma schema designed across Lead, Interaction and RejectionEvent with a 7-state status enum",
+        "Won/lost calibration loop to tune scoring weights from real deal outcomes"
+      ],
+      "metrics": {
+        "spec_length_sections": 13,
+        "grade_bands": 5,
+        "status_states": 7,
+        "response_sla_seconds": 60
+      }
+    },
+    {
+      "id": "seo-intelligence-agent",
+      "title": "SEO Intelligence Agent",
+      "order": 2,
+      "featured": true,
+      "description": "Built and benchmarked an SEO audit agent that grades website health across local, e-commerce, and SaaS domains, passing 15 of 15 assertions on a self-authored evaluation suite while refusing to invent metrics it cannot verify.",
+      "live_url": "TODO: deploy",
+      "source_url": "https://github.com/sebasa2510/.tatocreativehubclass/tree/main/seo-intelligence-workspace",
+      "status": "published",
+      "tags": ["AI agent", "SEO", "Evaluation harness", "Python"],
+      "highlights": [
+        "15/15 assertions passed across 3 evals (100% pass rate)",
+        "Tested on local grooming, e-commerce product pages, and construction SaaS",
+        "Separates Observed vs Inferred findings and flags data gaps instead of fabricating numbers"
+      ],
+      "metrics": {
+        "evals": 3,
+        "assertions_passed": 15,
+        "assertions_total": 15,
+        "pass_rate": 1.0
+      }
+    },
+    {
+      "id": "ai-os-scaffold",
+      "title": "AI OS Scaffold",
+      "order": 3,
+      "featured": true,
+      "description": "Built a file-based agent operating system — a JSON skill registry, a persistent memory store, and 13 modular system prompts that route incoming requests to the right skill.",
+      "live_url": "TODO: deploy",
+      "source_url": "https://github.com/sebasa2510/.tatocreativehubclass/tree/main/skills",
+      "status": "published",
+      "session": "Session 03",
+      "tags": ["Agent architecture", "JSON config", "Prompt engineering", "Routing"],
+      "highlights": [
+        "13 skills behind a single trigger-phrase registry",
+        "Config, memory, and skills fully separated for independent editing"
+      ]
+    },
+    {
+      "id": "two-tier-routing",
+      "title": "Two-Tier Skill Routing",
+      "order": 4,
+      "featured": true,
+      "description": "Extended the AI OS with a router that indexes 188 skills from 12 external repos, pulling them in as pinned submodules instead of copying their code.",
+      "live_url": "TODO: deploy",
+      "source_url": "https://github.com/sebasa2510/.tatocreativehubclass/blob/main/scripts/index-repo-skills.ps1",
+      "status": "published",
+      "session": "Session 04",
+      "tags": ["Git submodules", "Indexing", "Tooling", "Python"],
+      "highlights": [
+        "223 SKILL.md files collapsed to 188 distinct skills",
+        "Kept third-party code out of the repo — 0.1 MB pushed instead of 566 MB",
+        "Skips test fixtures and per-agent packaging duplicates automatically"
+      ],
+      "metrics": {
+        "skill_files": 223,
+        "distinct_skills": 188,
+        "repos": 12,
+        "pushed_size_mb": 0.1
+      }
+    }
+  ],
+
+  "open_items": [
+    "owner.name - your full name for the page header",
+    "brand.colors / brand.fonts - comes from the Session 05 brand kit review",
+    "live_url on all four projects - only deployable things should be listed as live",
+    "Session 01 produced no project and is intentionally omitted",
+    "lead-scoring-agent is a written spec, not running code - decide whether to publish the spec as-is, or build a small demo of the scoring logic so the page can show it working"
+  ],
+  "accuracy_notes": [
+    "lead-scoring-agent: Section 13 of the spec still contains <placeholder> config values, and there is no code, database or deployment. Describe it as a design or specification, not a shipped product - a reviewer who asks to see it running will find nothing.",
+    "seo-intelligence-agent: the 15/15 figure comes from benchmark.json, which records with_skill runs only. There is no without_skill baseline, so the evals show the skill works but do not prove it beats no skill at all."
+  ]
+}
