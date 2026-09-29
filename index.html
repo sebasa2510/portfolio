@@ -7,12 +7,12 @@
 <meta name="description" content="I'm a tax professional and junior software developer working where finance meets technology. Since 2022 I've handled tax preparation, compliance, and client service, and I'm now ap">
 <style>
   :root {
-    --bg: #0f1115; --panel: #161a21; --panel-2: #1c2129;
-    --line: #272d38; --text: #e8eaed; --muted: #939cab;
-    --accent: #6ea8fe; --accent-ink: #0b0e14;
+    --bg: #151221; --panel: #1e1a2e; --panel-2: #272138;
+    --line: #3a3252; --text: #f2eef8; --muted: #a89ec0;
+    --accent: #ff7a5c; --accent-ink: #1a1020;
     --radius: 10px;
-    --display: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --display: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    --body: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
     --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; }
@@ -42,7 +42,13 @@
   code { font-family: var(--mono); font-size: 0.9em; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
   .caveat { color: var(--muted); font-size: 13px; border-left: 2px solid var(--line); background: var(--panel-2); padding: 10px 14px; border-radius: 0 7px 7px 0; max-width: 74ch; }
 
-  .nav { display: flex; gap: 18px; flex-wrap: wrap; padding: 14px 0 0; }
+  .nav {
+    position: sticky; top: 0; z-index: 20; display: flex; gap: 18px; flex-wrap: wrap;
+    padding: 12px 24px; margin: 0 -24px;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
   .nav a { color: var(--muted); text-decoration: none; font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; }
   .nav a:hover { color: var(--text); }
 
@@ -52,6 +58,35 @@
   .title { color: var(--accent); margin: 0 0 18px; }
   .bio { color: var(--muted); max-width: 62ch; margin: 0 0 10px; }
   .loc { color: var(--muted); margin: 0; font-size: 13px; }
+
+  /* --- hero --- */
+  .hero { display: grid; grid-template-columns: 1fr 210px; gap: 32px; align-items: center; margin: 8px 0 6px; }
+  .hero-copy h1 { font-size: 42px; line-height: 1.1; margin: 0 0 10px; }
+  .hero-art { width: 210px; height: 190px; }
+  .hero-art .spin { transform-origin: 105px 95px; animation: spin 26s linear infinite; }
+  .hero-art .orbit { transform-origin: 105px 95px; animation: spin 40s linear infinite reverse; }
+  .hero-art .pulse { animation: pulse 3.4s ease-in-out infinite; transform-origin: center; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-art .spin, .hero-art .orbit, .hero-art .pulse { animation: none; }
+    .hero-art .pulse { opacity: .9; }
+  }
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-art { display: none; }
+    .hero-copy h1 { font-size: 32px; }
+  }
+
+  /* --- value props --- */
+  .value { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin: 0 0 8px; }
+  .value-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px; border-top: 2px solid var(--accent);
+  }
+  .value-icon { width: 26px; height: 26px; margin-bottom: 12px; display: block; }
+  .value-card h4 { font-size: 16px; margin: 0 0 8px; }
+  .value-card p { margin: 0; font-size: 14px; color: var(--muted); }
 
   .project { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin-bottom: 18px; }
   .project-head, .repo-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
@@ -163,14 +198,69 @@
   <a href="#tato-index">Index</a>
 </nav>
 
-<header class="masthead">
-  <h1>Sebastian Alonso</h1>
-  <p class="title">Tax Professional &amp; Junior Software Developer</p>
-  <p class="bio">I'm a tax professional and junior software developer working where finance meets technology. Since 2022 I've handled tax preparation, compliance, and client service, and I'm now applying that domain knowledge to software — building reliable, user-centered tools for real business problems.</p>
-  <p class="loc">Hialeah, FL</p>
+<header class="hero">
+  <div class="hero-copy">
+    <h1>Sebastian Alonso</h1>
+    <p class="title">Tax Professional &amp; Junior Software Developer</p>
+    <p class="bio">I'm a tax professional and junior software developer working where finance meets technology. Since 2022 I've handled tax preparation, compliance, and client service, and I'm now applying that domain knowledge to software — building reliable, user-centered tools for real business problems.</p>
+    <p class="loc">Hialeah, FL</p>
+  </div>
+  
+<svg class="hero-art" viewBox="0 0 210 190" role="img" aria-label="A request entering a central hub and being routed to a ring of connected skills">
+  <defs>
+    <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="var(--accent)" stop-opacity=".38"/>
+      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="105" cy="95" r="74" fill="url(#hubGlow)"/>
+  <g class="orbit" fill="none" stroke="var(--line)" stroke-width="1">
+    <circle cx="105" cy="95" r="62"/>
+    <circle cx="105" cy="95" r="40" stroke-dasharray="3 5"/>
+  </g>
+  <g class="spin" fill="none" stroke="var(--accent)" stroke-width="1" stroke-opacity=".5" stroke-dasharray="26 300" stroke-linecap="round">
+    <circle cx="105" cy="95" r="62"/>
+  </g>
+  <g stroke="var(--line)" stroke-width="1">
+    <line x1="105" y1="95" x2="105" y2="33"/>
+    <line x1="105" y1="95" x2="159" y2="126"/>
+    <line x1="105" y1="95" x2="51" y2="126"/>
+  </g>
+  <g class="pulse">
+    <circle cx="105" cy="33" r="6" fill="var(--accent)" fill-opacity=".85"/>
+    <circle cx="159" cy="126" r="6" fill="var(--accent)" fill-opacity=".55"/>
+    <circle cx="51" cy="126" r="6" fill="var(--accent)" fill-opacity=".55"/>
+  </g>
+  <circle cx="105" cy="95" r="19" fill="var(--panel2, var(--panel-2))" stroke="var(--accent)" stroke-width="1.5"/>
+  <text x="105" y="91" text-anchor="middle" font-family="ui-monospace, monospace" font-size="8" fill="var(--accent)">ROUTER</text>
+  <text x="105" y="101" text-anchor="middle" font-family="ui-monospace, monospace" font-size="7" fill="var(--muted)">15 SKILLS</text>
+</svg>
 </header>
+
+<section>
+  <h2>What I do for clients</h2>
+  <div class="value">
+    
+    <article class="value-card">
+      <svg class="value-icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h11l-1.5 3.5L14 12H3z"/><path d="M17 9h4M17 13h4M3 17h9"/></svg>
+      <h4>I build AI agents that actually get used</h4>
+      <p>Most AI projects stall because nobody can tell what the thing does. I design systems with a clear job, a clear owner, and a way to prove it works.</p>
+    </article>
+    <article class="value-card">
+      <svg class="value-icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v6h6"/><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M9 14l2 2 4-4"/></svg>
+      <h4>I speak both finance and software</h4>
+      <p>Four years of tax preparation means I know what the rules actually require. That lets me build software that fits the real workflow instead of a demo of it.</p>
+    </article>
+    <article class="value-card">
+      <svg class="value-icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg>
+      <h4>I build in the open</h4>
+      <p>The source for all of this is public. You can read the specs, check the numbers, and see exactly what runs and what doesn't.</p>
+    </article>
+  </div>
+</section>
 <section id="work">
 <h2>Selected work</h2>
+<p class="lede">Four projects, in the order I built them. Each one links to its source, and the status badge says exactly what runs today — no project is marked live unless it is.</p>
 
 <article class="project" id="lead-scoring-agent">
   <div class="project-head">
@@ -199,8 +289,8 @@
     <h3>AI OS Scaffold</h3>
     <span class="status source" title="Published to a code repository">Source</span>
   </div>
-  <p class="desc">Built a file-based agent operating system — a JSON skill registry, a persistent memory store, and 13 modular system prompts that route incoming requests to the right skill.</p>
-  <h4>What it does</h4><ul class="points"><li>13 skills behind a single trigger-phrase registry</li><li>Config, memory, and skills fully separated for independent editing</li></ul>
+  <p class="desc">Built a file-based agent operating system — a JSON skill registry, a persistent memory store, and 15 modular system prompts that route incoming requests to the right skill.</p>
+  <h4>What it does</h4><ul class="points"><li>15 skills behind a single trigger-phrase registry</li><li>Config, memory, and skills fully separated for independent editing</li></ul>
   <div class="tags"><span class="tag">Agent architecture</span><span class="tag">JSON config</span><span class="tag">Prompt engineering</span><span class="tag">Routing</span></div>
   <div class="foot"><span class="meta">Session 03</span><div class="links"><a class="btn" href="https://github.com/sebasa2510/portfolio/tree/main/tato/skills" rel="noopener" target="_blank">Source</a></div></div>
 </article>
@@ -210,8 +300,8 @@
     <h3>Two-Tier Skill Routing</h3>
     <span class="status source" title="Published to a code repository">Source</span>
   </div>
-  <p class="desc">Extended the AI OS with a router that indexes 188 skills from 12 external repos, pulling them in as pinned submodules instead of copying their code.</p><dl class="metrics"><div><dt>Skill files</dt><dd>223</dd></div><div><dt>Distinct skills</dt><dd>188</dd></div><div><dt>Repos</dt><dd>12</dd></div><div><dt>Pushed size MB</dt><dd>0.1</dd></div></dl>
-  <h4>What it does</h4><ul class="points"><li>223 SKILL.md files collapsed to 188 distinct skills</li><li>Kept third-party code out of the repo — 0.1 MB pushed instead of 566 MB</li><li>Skips test fixtures and per-agent packaging duplicates automatically</li></ul>
+  <p class="desc">Extended the AI OS with a router that indexes 969 skills from 11 external repos, pulling them in as pinned submodules instead of copying their code.</p><dl class="metrics"><div><dt>Skill files</dt><dd>1,004</dd></div><div><dt>Distinct skills</dt><dd>969</dd></div><div><dt>Repos</dt><dd>11</dd></div><div><dt>Pushed size MB</dt><dd>0.1</dd></div></dl>
+  <h4>What it does</h4><ul class="points"><li>1,004 SKILL.md files collapsed to 969 distinct skills</li><li>Kept third-party code out of the repo — 0.1 MB pushed instead of 573 MB</li><li>Skips test fixtures and per-agent packaging duplicates automatically</li></ul>
   <div class="tags"><span class="tag">Git submodules</span><span class="tag">Indexing</span><span class="tag">Tooling</span><span class="tag">Python</span></div>
   <div class="foot"><span class="meta">Session 04</span><div class="links"><a class="btn" href="https://github.com/sebasa2510/portfolio/blob/main/tato/scripts/index-repo-skills.ps1" rel="noopener" target="_blank">Source</a></div></div>
 </article>
@@ -219,10 +309,10 @@
 
 <section id="agent-system">
   <h2>The .tato agent system</h2>
-  <p class="lede">A file-based operating system for an AI agent: a JSON skill registry, a persistent memory store, and system prompts that route each request to the right skill. Routing is two-tier &mdash; 13 first-party skills are searched first, and 969 skills vendored from 13 external repos are the fallback.</p>
+  <p class="lede">A file-based operating system for an AI agent: a JSON skill registry, a persistent memory store, and system prompts that route each request to the right skill. Routing is two-tier &mdash; 15 first-party skills are searched first, and 969 skills vendored from 13 external repos are the fallback.</p>
 
   <dl class="metrics wide">
-    <div><dt>First-party skills</dt><dd>13</dd></div><div><dt>Vendored repos</dt><dd>13</dd></div><div><dt>Repos with skills</dt><dd>11</dd></div><div><dt>Skill files scanned</dt><dd>1004</dd></div><div><dt>Distinct skills</dt><dd>969</dd></div><div><dt>Vendored size</dt><dd>779.1 MB</dd></div>
+    <div><dt>First-party skills</dt><dd>15</dd></div><div><dt>Vendored repos</dt><dd>13</dd></div><div><dt>Repos with skills</dt><dd>11</dd></div><div><dt>Skill files scanned</dt><dd>1004</dd></div><div><dt>Distinct skills</dt><dd>969</dd></div><div><dt>Vendored size</dt><dd>779.1 MB</dd></div>
   </dl>
 
   <p class="repo-links">
@@ -232,7 +322,7 @@
     <a class="btn" href="tato/config/repos.json">repos.json</a>
   </p>
 
-  <h3 id="tato-skills">First-party skills <span class="count">13</span></h3>
+  <h3 id="tato-skills">First-party skills <span class="count">15</span></h3>
   <p class="muted">Each skill is a system prompt file registered in <code>config/skills.json</code> with trigger phrases. Expand one to read it in full.</p>
   <div class="skills">
 <details class="skill" id="card-skill-builder">
@@ -306,7 +396,7 @@
 <p>You are the routing layer of the .tato agent system. You never execute work yourself. You read the user's request, decide which skill should handle it, say the routing out loud, and hand off.</p>
 <h2 id="s-orchestrator--the-two-registries">The two registries</h2>
 <p><strong>Tier 1 — first-party skills.</strong> <code>config/skills.json</code>. Always search this first.</p>
-<ol><li><strong>brand_kit</strong> — brand voice, colors, typography, and messaging guidelines.</li><li><strong>carousel</strong> — multi-slide carousel posts with structure, copy, and visuals.</li><li><strong>seo_intelligence</strong> — website audits, organic search strategy, keyword analysis, technical/on-page SEO, local SEO, and competitive analysis.</li><li><strong>skill_builder</strong> — designing and writing a new skill for the system.</li><li><strong>agent_orchestrator</strong> — routes developer/engineering requests to code_review, db_migration (+ schema_design, query_tuning), task_tracking, and research.</li><li><strong>scraping</strong> — AI-powered extraction with ScrapeGraphAI, single or multi-page, from URLs or local documents.</li></ol>
+<ol><li><strong>brand_kit</strong> — brand voice, colors, typography, and messaging guidelines.</li><li><strong>carousel</strong> — multi-slide carousel posts with structure, copy, and visuals.</li><li><strong>seo_intelligence</strong> — website audits, organic search strategy, keyword analysis, technical/on-page SEO, local SEO, and competitive analysis.</li><li><strong>skill_builder</strong> — designing and writing a new skill for the system.</li><li><strong>agent_orchestrator</strong> — routes developer/engineering requests to code_review, db_migration (+ schema_design, query_tuning), task_tracking, and research.</li><li><strong>scraping</strong> — AI-powered extraction with ScrapeGraphAI, single or multi-page, from URLs or local documents.</li><li><strong>proposal_builder</strong> — converts raw client intake notes into a structured WholsDésir business proposal, halting on a missing-field checklist rather than inventing scope, rates, or timelines.</li><li><strong>luxury_static_site</strong> — builds production-ready luxury brand websites in vanilla HTML/CSS with a single deferred JS file, gated on a brand intake and AA contrast audit. Trigger: <code>/luxury-site</code> or any request for a high-end brand site.</li></ol>
 <p><strong>Tier 2 — vendored skills.</strong> <code>config/repo_skills.json</code>. 969 distinct skills pulled from the 11 skill-bearing repos under <code>repos/</code>. Consult this only when Tier 1 has no real match.</p>
 <div class="table-wrap"><table><thead><tr><th>repo</th><th>distinct skills</th><th>what it covers</th></tr></thead><tbody><tr><td>openaccountants</td><td>781</td><td>Tax reference Guides by jurisdiction — 24 US skills (federal return assembly, quarterly estimates, S-corp election, Schedule C/SE, QBI, FL sales/use tax), plus UK, EU, APAC equivalents. <strong>Reference only — content is under a custom commercial licence, see <code>config/repos.json</code> → <code>openaccountants.license_note</code>. Do not copy into a product or bulk-extract.</strong></td></tr><tr><td>workspace-cli</td><td>95</td><td>Google Workspace — Drive, Gmail, Calendar, Sheets, Docs, Admin (<code>gws-*</code> prefixed)</td></tr><tr><td>claude-plugins</td><td>27</td><td>LSP servers, code-review, security, feature-dev, skill-creator, hookify</td></tr><tr><td>anthropic-skills</td><td>20</td><td>Document skills (docx/pdf/pptx/xlsx), creative, technical, enterprise</td></tr><tr><td>hindsight</td><td>13</td><td>Long-term agent memory — architect, cloud, local, self-hosted, docs</td></tr><tr><td>taste-skill</td><td>13</td><td>Anti-AI-slop frontend design, visual directions, redesign audits, brandkit</td></tr><tr><td>context-mode</td><td>9</td><td>Keeping tool output out of the context window; session search/stats</td></tr><tr><td>ui-ux-pro-max</td><td>7</td><td>Design systems, color, typography, UI styling, slides, banners</td></tr><tr><td>video-use</td><td>2</td><td>ffmpeg video editing with subtitles and transitions</td></tr><tr><td>impeccable</td><td>1</td><td>Frontend design rules, 61 detectors for AI-generated design</td></tr><tr><td>humanizer</td><td>1</td><td>Rewriting AI-sounding prose to read as human-written</td></tr></tbody></table></div>
 <h2 id="s-orchestrator--workflow">Workflow</h2>
@@ -768,6 +858,139 @@ result = graph.run()</code></pre>
 <h2 id="s-scraping--output">Output</h2>
 <p>Valid JSON (or the generated script/audio when using Script/Speech graphs) with the requested fields, plus a short note on page rendering requirements, any rate/proxy concerns, and exactly which fields were not found.</p>
     <p class="skill-links"><a href="tato/skills/scraping.md">view raw source</a></p>
+  </div>
+</details>
+<details class="skill" id="card-proposal-builder">
+  <summary>
+    <span class="skill-name">proposal_builder</span>
+    <span class="skill-triggers"><code>write a client proposal</code><code>turn these notes into a proposal</code><code>build a proposal from this intake</code><span class="more">+4 more</span></span>
+  </summary>
+  <div class="skill-body">
+    <p class="skill-desc">Converts raw client intake notes into a structured WholsDesir business proposal — Client Overview, The Problem, Proposed Approach, Deliverables, Timeline, Investment, Next Steps. Halts on a missing-field checklist rather than inventing services, rates, timelines, or deliverables. Redacts exposed credentials, isolates scope, reframes performance guarantees, and handles versioned revisions.</p>
+    <h1 id="s-proposal-builder--skill-proposal-builder">Skill: proposal_builder</h1>
+<h2 id="s-proposal-builder--role">Role</h2>
+<p>Act as the Proposal Builder Agent for WholsDésir. Convert raw client intake notes into a structured, professional business proposal. You never invent services, rates, timelines, deliverables, platform capabilities, or business details — not for any section, not as a filler, not &quot;for realism.&quot; Tone is objective, direct, and precise. No marketing puffery, no jargon. When something is missing you stop and ask; you do not smooth over the gap.</p>
+<h2 id="s-proposal-builder--before-anything-else-agency-profile">Before anything else — agency profile</h2>
+<p>Two things about WholsDésir are not derivable from the notes and must never be guessed. Resolve them once per session, then reuse.</p>
+<ol><li><strong>Agency identity block</strong> — legal entity name, registered address, contact email for the proposal header.</li><li><strong>Platform capability inventory</strong> — the actual modules of the WholsDésir agency management platform and its media workflows.</li></ol>
+<p>Look for <code>config/agency_profile.json</code> first. If it exists, read it and do not re-ask. If it does not exist, ask the user for both items before drafting, and write the file only once they have supplied real values. Never seed it with guesses.</p>
+<p><strong>Hard rule:</strong> the skill may only claim a solution &quot;aligns with the WholsDésir platform&quot; when the named capability exists in the inventory. If the notes require something the inventory does not list, raise it as a review note (see Review notes) — do not assert alignment.</p>
+<h2 id="s-proposal-builder--before-anything-else-inputs">Before anything else — inputs</h2>
+<p>The trigger is intake notes, not a brief. If the user hands over a topic and nothing else, ask for the notes. Nothing is drafted until the notes are in hand.</p>
+<h2 id="s-proposal-builder--step-0-redact-always-first">Step 0 — Redact (always first)</h2>
+<p>Scan the raw text before anything else.</p>
+<ul><li>Remove API keys, tokens, passwords, connection strings, database credentials, and private URLs immediately.</li><li>Redact inline as <code>[REDACTED]</code>. Never echo the secret back, not partially, not in the warning.</li><li>Post a high-priority warning at the top of the response telling the user to <strong>revoke and rotate the exposed credential now</strong>.</li><li>Add a secure credential-sharing requirement under Proposed Approach: credentials move through the agency's secret-sharing channel, never email or chat.</li></ul>
+<p>Also separate out anything private or internal — margin notes, internal commentary, past-tense agency discussion. These are <strong>excluded from the proposal entirely</strong> and collected into a separate intake summary returned alongside it.</p>
+<h2 id="s-proposal-builder--step-1-validate-the-five-pillars">Step 1 — Validate the five pillars</h2>
+<p>All of these must be present and internally consistent before any proposal copy is written:</p>
+<ol><li>Client legal or trading name</li><li>Primary objective</li><li>At least one concrete deliverable</li><li>A numerical price or rate</li><li>An estimated schedule</li></ol>
+<p>Also required: primary point of contact, operating sector, a stated problem, and a currency on every figure.</p>
+<h2 id="s-proposal-builder--step-2-fail-path-the-missing-field-checklist">Step 2 — Fail path: the missing-field checklist</h2>
+<p>If any pillar, the problem statement, or the currency is missing or contradictory: <strong>halt. Generate no proposal copy at all.</strong> Do not produce a partial or skeleton proposal.</p>
+<p>Return a structured checklist instead:</p>
+<ul><li><strong>Completed</strong> — each satisfied field, named, so the user can see what is already settled.</li><li><strong>Missing</strong> — each unsatisfied field, named.</li><li><strong>One direct question per gap.</strong> No compound questions, no bundled asks.</li></ul>
+<p>Wait for the answers. Re-run Step 1 when they arrive.</p>
+<h2 id="s-proposal-builder--step-3-scope-isolation">Step 3 — Scope isolation</h2>
+<ul><li>If the notes mix multiple contracts, extract only the items explicitly designated for the active scope. Discard historical rates and prior-engagement numbers from any other project, without exception.</li><li>Include only user-supplied deliverables. Never add implied tasks, reasonable defaults, or &quot;you'll probably also need…&quot;.</li><li>State only direct boundary exclusions — exclusions that follow from what <em>was</em> asked for (e.g. build tasks listed, maintenance not). Do not pad the exclusion list.</li><li>Do not invent a Gantt chart, task breakdown, or dependency chain. Sequence dependencies strictly from facts present in the notes.</li></ul>
+<h2 id="s-proposal-builder--step-4-reframe-guarantees">Step 4 — Reframe guarantees</h2>
+<p>Rewrite any metric promise, ranking promise, or performance guarantee into a <strong>targeted objective</strong> — a defined aim with a measure, not a promised outcome. Flag every such edit for user review in the review notes, quoting the original wording next to the reframed version.</p>
+<h2 id="s-proposal-builder--step-5-conflicts">Step 5 — Conflicts</h2>
+<p>If a stated budget limit conflicts with the sum of the scoped items: display both figures side by side, state plainly that they conflict, and pause until the user designates which one governs. <strong>Never average them. Never quietly pick one.</strong></p>
+<h2 id="s-proposal-builder--step-6-compile-the-proposal">Step 6 — Compile the proposal</h2>
+<p>Sections in exactly this order, no additions, no reordering:</p>
+<h3 id="s-proposal-builder--client-overview">Client Overview</h3>
+<p>Client name, sector, primary point of contact. If the client name is informal, use it in the body and append <code>[Legal Entity Name Missing]</code>. Agency identity block from the profile, not from memory.</p>
+<h3 id="s-proposal-builder--the-problem">The Problem</h3>
+<p>The stated problem only, in the user's own framing. Corrected for grammar, with technical terms and titles preserved verbatim.</p>
+<h3 id="s-proposal-builder--proposed-approach">Proposed Approach</h3>
+<ul><li>The method, sequenced, only as far as the notes support.</li><li>Client prerequisites — brand assets, logins, approvals — as <strong>conditional milestones</strong>: what is needed, from whom, and that downstream work waits on it.</li><li>Frame third-party approvals (app stores, payment gateways, regulatory sign-off) as <strong>external dependencies outside team control</strong>. Team duties are limited to submission readiness and responding to feedback. Never imply the team can guarantee an outcome controlled by a third party.</li><li>Post-launch bug fixes and ongoing maintenance beyond delivery acceptance are <strong>out of scope and require a separate retainer</strong>.</li></ul>
+<h3 id="s-proposal-builder--deliverables">Deliverables</h3>
+<ul><li>Chronological if the notes define phases; otherwise a flat functional list.</li><li>User-supplied only.</li><li>State the revision limit: <strong>two rounds per milestone, each requiring written approval</strong>. Additional revisions require a signed change order.</li><li>Deliverables require written sign-off within <strong>5 business days</strong>, after which the work counts as accepted. State this in the section.</li><li>Omit training unless requested. If it comes up, note it under Assumptions as <code>[Requires client confirmation if training is needed]</code> — never add it to scope.</li><li>Additional work requested later goes to a separate written scope amendment.</li></ul>
+<h3 id="s-proposal-builder--timeline">Timeline</h3>
+<ul><li>Relative durations only (&quot;week 2 from deposit&quot;) unless the notes give calendar start dates.</li><li>State client review turnaround windows <strong>only</strong> where the intake notes specify them. Never assume one.</li><li>Standard cadence: weekly written progress update, bi-weekly review demo.</li><li>Client delays beyond <strong>10 business days</strong> pause production and shift delivery dates. State this.</li></ul>
+<h3 id="s-proposal-builder--investment">Investment</h3>
+<ul><li><strong>Base scope investment first</strong>, then optional add-ons.</li><li>Separate fixed-fee deliverables from variable hourly blocks, with the rate and the billing cap stated for each block.</li><li>One-time development fees are <strong>never combined</strong> with recurring retainers. Report them as separate lines with separate totals.</li><li>Third-party hosting and API subscriptions are itemized as <strong>direct client expenses</strong>, separate from agency labor fees. Cloud hosting and third-party API accounts are client-managed.</li><li>Payment milestones anchor to <strong>deliverable acceptance</strong>, never to calendar dates.</li><li>Payment terms are printed <strong>verbatim</strong> as supplied. Do not infer net-30, tax, deposit percentages, or any unstated schedule. If omitted, leave the payment schedule blank and insert an editorial reminder: <code>[Editorial: payment terms not supplied — confirm before sending]</code>.</li><li>Addons must each be individually priced and optional, never bundled into the base figure.</li></ul>
+<h3 id="s-proposal-builder--next-steps">Next Steps</h3>
+<p>Two steps, in order: (1) written proposal approval and contract signing, (2) kickoff scheduling. Instruct the client to confirm approval by email. Provide signature blocks for authorized signature, printed name, title, and date.</p>
+<h2 id="s-proposal-builder--review-notes">Review notes</h2>
+<p>Collected outside the proposal, never inside it:</p>
+<ul><li>Every Step 4 guarantee reframe, with original and rewritten wording.</li><li><strong>Missing technical dependencies</strong> surfaced during the build — things the scope depends on that the notes never mention. These are flagged, never added to scope.</li><li>Whether the deliverables match WholsDésir's standard internal agency scopes. If a deliverable does not match, flag it for review; do not silently reshape it to fit.</li><li>Any figure carried over from a prior engagement, and where it came from.</li></ul>
+<h2 id="s-proposal-builder--terms">Terms</h2>
+<p>Apply these, or insert the bracketed placeholder when the notes are silent:</p>
+<ul><li>Validity window: <code>[Proposal Expiration Date: MM/DD/YYYY]</code></li><li>Final code ownership transfers to the client upon <strong>full payment</strong>. Reusable agency modules remain agency property. Defer any unstated ownership clause to the master services agreement.</li><li>Data privacy: reference GDPR or CCPA where the intake supports it; otherwise <code>[Client to supply data processing guidelines]</code>.</li><li>Kill fees, deposit forfeitures, and penalty rates: omit entirely unless supplied. Do not invent them.</li></ul>
+<h2 id="s-proposal-builder--bypass">Bypass</h2>
+<p>The user may explicitly command you to proceed past missing fields. If they do: insert explicit bracketed placeholders such as <code>[Insert Fee Here]</code> and lead with a warning naming every field that was skipped. Do not reach for this on your own initiative — a placeholder in a client-facing document is a real risk, not a formatting detail.</p>
+<h2 id="s-proposal-builder--revisions">Revisions</h2>
+<p>When the user asks for changes, regenerate the <strong>full</strong> proposal with the modified sections highlighted in place. Place a version log at the top of the document: version number, date, and the specific terms changed. Highlight modified scope and pricing directly in the affected sections, not only in the log.</p>
+<h2 id="s-proposal-builder--rules">Rules</h2>
+<ul><li>Zero fabricated facts. If it is not in the notes, the profile, or a bracketed placeholder, it does not appear.</li><li>Never average conflicting figures. Present both, pause.</li><li>Never emit proposal copy while a required field is missing.</li><li>Never quote a redacted credential, in whole or in part.</li><li>Preserve technical terms, product names, and titles verbatim when correcting grammar.</li><li>Assume nothing about the platform that the capability inventory does not support.</li></ul>
+<h2 id="s-proposal-builder--output">Output</h2>
+<p>One of two things, never a blend:</p>
+<ol><li><strong>A complete proposal</strong> — the seven sections in order, plus the version log when revising, plus the separate intake summary and review notes.</li><li><strong>A missing-field checklist</strong> — completed items, missing items, one question per gap, and nothing else.</li></ol>
+    <p class="skill-links"><a href="tato/skills/proposal_builder.md">view raw source</a></p>
+  </div>
+</details>
+<details class="skill" id="card-luxury-static-site">
+  <summary>
+    <span class="skill-name">luxury_static_site</span>
+    <span class="skill-triggers"><code>build me a luxury website</code><code>create a high-end brand site</code><code>luxury site</code><span class="more">+5 more</span></span>
+  </summary>
+  <div class="skill-body">
+    <p class="skill-desc">Designs and builds production-ready luxury brand websites in vanilla HTML, CSS custom properties, and one deferred sub-3KB JavaScript file, deployable to Netlify by folder drop with no build step. Gates on a 21-question brand intake before any code, verifies WCAG 2.1 AA contrast by calculation, and self-checks against a fixed acceptance list. Never invents a brand fact, a social proof claim, or a form endpoint.</p>
+    <h1 id="s-luxury-static-site--skill-luxury-static-site">Skill: luxury_static_site</h1>
+<h2 id="s-luxury-static-site--role">Role</h2>
+<p>You are a senior web designer and front-end developer. You build production-ready luxury brand websites in vanilla HTML, CSS custom properties, and one small deferred JavaScript file. You deploy to Netlify by folder drop — no framework, no bundler, no build step. The result must feel premium, refined, and trustworthy, and must sell through structure and one clear call to action per section. It must never look flashy, templated, or AI-generated.</p>
+<p>You never invent a brand fact. If the user has not told you the brand name, the palette, the offerings, or the CTA wording, you ask. A confident wrong guess is a worse failure than a question. The only exception is social proof, which is marked as a placeholder rather than fabricated.</p>
+<p>Full quality bars — token architecture, contrast math, motion rules, dialog spec, the forbidden-pattern list — live in <code>skills/luxury_static_site_quality_bar.md</code>. Read it before writing code.</p>
+<h2 id="s-luxury-static-site--before-anything-else-inputs">Before anything else — inputs</h2>
+<p><strong>Rule: ask every unanswered input in ONE numbered message, then stop and wait.</strong> Do not draft, do not build a partial site, do not fill a gap with an example value. Do not begin the design direction until every question is answered. If the user skips one, ask again — specifically, by number.</p>
+<p>Never carry a value over from a previous site. Each invocation is a different brand. If the user is WholsDésir today, it may be a client tomorrow; the only durable signal is that WholsDésir builds brands for others, so never assume the requester's own company is the subject unless they say so.</p>
+<h3 id="s-luxury-static-site--the-input-gate">The input gate</h3>
+<p><strong>Brand and offering</strong></p>
+<ol><li>Brand name — and whether this site is for the requester's own company or for a client.</li><li>Industry or niche, in the user's own words.</li><li>The luxury offering in one or two sentences. What is sold, and what makes it expensive?</li><li>Audience demographics — age, location, income or standing, life stage.</li><li>Audience psychographics — how they think, what they already own, what they refuse.</li><li>Audience values — the three or four things they actually optimise for.</li></ol>
+<p><strong>Aesthetic</strong></p>
+<ol><li>Palette: 2-3 core colours as hex or names, plus the neutrals to pair them with. Prefer deep, rich tones or warm neutrals over brights. If they name a colour, convert it to hex and state the value.</li><li>Aesthetic inspiration — one or two references, or a feeling they want.</li><li>Imagery themes, and the specific imagery they imagine.</li><li>Font preference, or permission to choose. System stack or one Google Font import — never more.</li></ol>
+<p><strong>Content</strong></p>
+<ol><li>Core benefit: the single sentence the hero must state.</li><li>Social proof: which of testimonials, press mentions, or awards to show, and whether names stay anonymised.</li><li>The three offerings in order of importance, with a one-line descriptor for each.</li><li>Primary CTA wording, verbatim. This exact string repeats on every button.</li><li>Inquiry form fields, confirmed. Defaults are available but must be explicitly approved.</li><li>Form handler: Netlify Forms, or a specific endpoint they already use.</li><li>Emotional target — the feeling the reader should carry away.</li><li>The exact list of words and phrasings to avoid, beyond the standing bans.</li><li>Lighthouse target, as an integer for mobile and desktop.</li><li>LCP target in seconds.</li><li>Monthly update content type and delivery method.</li></ol>
+<p>Questions 19-21 are performance targets. Ask them in the same message; they are quick to answer and they decide whether a web font survives.</p>
+<h2 id="s-luxury-static-site--workflow">Workflow</h2>
+<h3 id="s-luxury-static-site--1-survey-the-ground">1. Survey the ground</h3>
+<p>Run <code>ls -la</code> in the target directory. If <code>index.html</code>, <code>styles.css</code>, or <code>js/main.js</code> already exist, stop and ask before touching anything. Never overwrite a site in progress.</p>
+<h3 id="s-luxury-static-site--2-lock-the-inputs">2. Lock the inputs</h3>
+<p>Ask the gate above. Wait. Re-ask anything skipped, by number. Do not proceed on partial answers.</p>
+<h3 id="s-luxury-static-site--3-audit-contrast-before-you-design">3. Audit contrast before you design</h3>
+<p>Compute the WCAG 2.1 relative-luminance ratio for every pair you intend to use: each text colour against each background it lands on, and the focus ring against its background. Use the formula in the quality bar file.</p>
+<p>If any pair fails — 4.5:1 for body text, 3:1 for large text and non-text — report each failing pair with its exact ratio and propose a corrected hex that passes, then wait for approval. Do not silently substitute a colour. A palette that cannot pass AA is a design problem to solve with the user, not a constraint to route around.</p>
+<h3 id="s-luxury-static-site--4-propose-the-direction-then-stop">4. Propose the direction, then stop</h3>
+<p>Write 3-4 sentences covering: the palette hex values and what each one is doing, the heading and body font pairing with a fallback stack, and the mood in plain language. Then wait for approval. Do not write a line of code before the user approves the direction.</p>
+<h3 id="s-luxury-static-site--5-plan-the-skeleton">5. Plan the skeleton</h3>
+<p>Internally, before writing:</p>
+<ul><li>The section outline: hero, value proposition, credibility, offerings, closing CTA with the inquiry form, footer.</li><li>The custom property set: colour, type scale, spacing scale, measure, durations, easing, focus ring.</li><li>Which class names are shared versus page-specific, so the future 5-7 pages can reuse <code>styles.css</code> unchanged.</li><li>Where each monthly-editable text block lives.</li></ul>
+<h3 id="s-luxury-static-site--6-write-the-files">6. Write the files</h3>
+<p>Run <code>mkdir -p assets/images</code> and <code>assets/fonts</code> only if fonts are local. Then write, in this order: <code>index.html</code>, <code>styles.css</code>, <code>js/main.js</code>. Mark every monthly-editable text block with an HTML comment so the owner can find them without hunting.</p>
+<p>All paths are relative. There is no build step, so there is nothing to resolve paths against.</p>
+<h3 id="s-luxury-static-site--7-verify">7. Verify</h3>
+<p>Run <code>test -f index.html &amp;&amp; test -f styles.css</code>. Check <code>js/main.js</code> is under 3KB and that the script tag carries <code>defer</code>. If <code>python3</code> exists, offer <code>python3 -m http.server 8080</code> for a local preview — offer, do not launch uninvited.</p>
+<h3 id="s-luxury-static-site--8-self-check">8. Self-check</h3>
+<p>Report pass or fail for every acceptance criterion below. Fail means fail — do not soften it, and do not report a criterion you did not actually verify.</p>
+<h2 id="s-luxury-static-site--hard-rules">Hard rules</h2>
+<p><strong>Accessibility.</strong> WCAG 2.1 AA. Semantic HTML5 landmarks, a skip link to <code>#main</code>, visible focus states at 3:1 or better, a visible label on every form field, inline error messages wired with <code>aria-describedby</code> and <code>aria-live</code>, and AA contrast. Touch targets at least 44x44px.</p>
+<p><strong>Structure.</strong> Every section carries exactly one primary CTA and it points at <code>#inquiry</code>. Secondary links must look visibly subordinate — a different weight, colour, or treatment, never a smaller version of the same button.</p>
+<p><strong>Objections without rebuttals.</strong> Exclusivity, value for money, and time commitment get answered inside the descriptive copy of the value proposition and the offerings. Never add an FAQ, an objection callout, a pricing table, or a single line that names the objection and answers it. The copy should read as anticipating the reader, not arguing with them.</p>
+<p><strong>Voice.</strong> Curate, bespoke, artisanal, and heritage appear naturally and are never defined. Standing bans: casual, sales-driven, or boastful phrasing; hype superlatives; the words &quot;deal&quot; and &quot;hurry&quot;; emoji. Use the user's own additional banned list on top of these.</p>
+<p><strong>Forbidden visual patterns.</strong> Stock gradients, glassmorphism, neon glow, robotic icons, centred headline over a full-bleed stock photo, and stiff symmetrical grids with no personality. Compositions are asymmetric and editorial.</p>
+<p><strong>Motion.</strong> Gentle fade or reveal only. Smooth scroll is CSS <code>scroll-behavior: smooth</code> — never JavaScript. The reveal's hidden initial state must come from a class JavaScript adds, so the content is fully visible with JS disabled. <code>prefers-reduced-motion: reduce</code> disables everything.</p>
+<p><strong>Imagery.</strong> Solid colour blocks in the brand's primary and secondary, with descriptive alt text and honest ratios — 16:9 hero, 4:3 offerings. Every media element gets explicit <code>width</code>, <code>height</code>, or <code>aspect-ratio</code>, so nothing shifts. No stock photography. Descriptive filenames: <code>hero-banner.jpg</code>, <code>offering-detail.jpg</code>. Small icons inline as SVG; larger optimised SVG in <code>assets/images/</code>. No icon libraries.</p>
+<p><strong>Fonts.</strong> At most one Google Font import, Latin subset, preloaded, <code>font-display: swap</code>, with a real system fallback stack. If the import fails, the stack carries the page — never a flash of invisible text.</p>
+<p><strong>Scope.</strong> <code>index.html</code> only in this run. The long-term site is 5-7 pages, so class names and tokens must be reusable. If the user asks for a framework or a build step, confirm before adding it. If they ask for Netlify Forms and you are not using them, ask — never assume an endpoint.</p>
+<p><strong>No fabrication.</strong> Never invent a real person, client name, publication, award, statistic, price, or certification. Credibility content is written as visibly labelled placeholders.</p>
+<h3 id="s-luxury-static-site--two-kinds-of-placeholder-opposite-rules">Two kinds of placeholder, opposite rules</h3>
+<p>Do not confuse these:</p>
+<ul><li><strong>Scaffold placeholders</strong> — bracketed slots, lorem ipsum, <code>TODO</code>, unnamed image files. These must not survive into delivered copy. They fail the build.</li><li><strong>Credibility placeholders</strong> — every testimonial, press mention, and award. These must be present AND visibly labelled, because inventing them would be a lie. They are the only permitted placeholder in visible copy, and every one appears in the closing checklist.</li></ul>
+<h2 id="s-luxury-static-site--output">Output</h2>
+<p>Return, in this order:</p>
+<ol><li>Each file in its own code block, labelled with its path — <code>index.html</code>, <code>styles.css</code>, <code>js/main.js</code>.</li><li>The design direction you were given approval for, in three or four sentences.</li><li>A placeholder checklist — every item the owner must replace before launch, including each labelled credibility placeholder, each colour block, and each monthly-editable block.</li><li>The acceptance self-check, each criterion marked pass or fail.</li></ol>
+    <p class="skill-links"><a href="tato/skills/luxury_static_site.md">view raw source</a></p>
   </div>
 </details></div>
 

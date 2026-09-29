@@ -10,9 +10,21 @@
   },
 
   "brand": {
-    "_comment": "Populate from the Session 05 brand kit review. Left null so the site builder can fall back without inventing a palette.",
-    "colors": null,
-    "fonts": null
+    "_comment": "Deep plum-navy base with a warm coral accent. Warm enough to read as approachable rather than corporate, dark enough to keep long technical pages easy on the eyes.",
+    "colors": {
+      "bg": "#151221",
+      "panel": "#1e1a2e",
+      "panel2": "#272138",
+      "line": "#3a3252",
+      "text": "#f2eef8",
+      "muted": "#a89ec0",
+      "accent": "#ff7a5c",
+      "accentInk": "#1a1020"
+    },
+    "fonts": {
+      "display": "\"Segoe UI\", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif",
+      "body": "\"Segoe UI\", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif"
+    }
   },
 
   "projects": [
@@ -83,14 +95,14 @@
       "title": "AI OS Scaffold",
       "order": 3,
       "featured": true,
-      "description": "Built a file-based agent operating system — a JSON skill registry, a persistent memory store, and 13 modular system prompts that route incoming requests to the right skill.",
+      "description": "Built a file-based agent operating system — a JSON skill registry, a persistent memory store, and 15 modular system prompts that route incoming requests to the right skill.",
       "live_url": "TODO: deploy",
       "source_url": "https://github.com/sebasa2510/portfolio/tree/main/tato/skills",
       "status": "published",
       "session": "Session 03",
       "tags": ["Agent architecture", "JSON config", "Prompt engineering", "Routing"],
       "highlights": [
-        "13 skills behind a single trigger-phrase registry",
+        "15 skills behind a single trigger-phrase registry",
         "Config, memory, and skills fully separated for independent editing"
       ]
     },
@@ -99,21 +111,21 @@
       "title": "Two-Tier Skill Routing",
       "order": 4,
       "featured": true,
-      "description": "Extended the AI OS with a router that indexes 188 skills from 12 external repos, pulling them in as pinned submodules instead of copying their code.",
+      "description": "Extended the AI OS with a router that indexes 969 skills from 11 external repos, pulling them in as pinned submodules instead of copying their code.",
       "live_url": "TODO: deploy",
       "source_url": "https://github.com/sebasa2510/portfolio/blob/main/tato/scripts/index-repo-skills.ps1",
       "status": "published",
       "session": "Session 04",
       "tags": ["Git submodules", "Indexing", "Tooling", "Python"],
       "highlights": [
-        "223 SKILL.md files collapsed to 188 distinct skills",
-        "Kept third-party code out of the repo — 0.1 MB pushed instead of 566 MB",
+        "1,004 SKILL.md files collapsed to 969 distinct skills",
+        "Kept third-party code out of the repo — 0.1 MB pushed instead of 573 MB",
         "Skips test fixtures and per-agent packaging duplicates automatically"
       ],
       "metrics": {
-        "skill_files": 223,
-        "distinct_skills": 188,
-        "repos": 12,
+        "skill_files": 1004,
+        "distinct_skills": 969,
+        "repos": 11,
         "pushed_size_mb": 0.1
       }
     }
@@ -134,5 +146,22 @@
   "accuracy_notes": [
     "lead-scoring-agent: Section 13 of the spec still contains <placeholder> config values, and there is no code, database or deployment. Describe it as a design or specification, not a shipped product - a reviewer who asks to see it running will find nothing.",
     "seo-intelligence-agent: the 15/15 figure comes from benchmark.json, which records with_skill runs only. There is no without_skill baseline, so the evals show the skill works but do not prove it beats no skill at all."
+  ],
+  "client_value": [
+    {
+      "id": "plain-language",
+      "headline": "I build AI agents that actually get used",
+      "body": "Most AI projects stall because nobody can tell what the thing does. I design systems with a clear job, a clear owner, and a way to prove it works."
+    },
+    {
+      "id": "domain-plus-code",
+      "headline": "I speak both finance and software",
+      "body": "Four years of tax preparation means I know what the rules actually require. That lets me build software that fits the real workflow instead of a demo of it."
+    },
+    {
+      "id": "accountable",
+      "headline": "I build in the open",
+      "body": "The source for all of this is public. You can read the specs, check the numbers, and see exactly what runs and what doesn't."
+    }
   ]
 }

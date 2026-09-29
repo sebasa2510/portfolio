@@ -113,6 +113,13 @@ const COPY_TREE = [
   ['seo-intelligence-workspace', 'seo-intelligence-workspace'],
 ];
 
+// Never publish. skills/fixtures/ holds deliberately incomplete notes and
+// deliberately planted fake credentials used to test the halt and redaction
+// paths. The repo's .gitignore blocks them from git but has no effect here,
+// so the copy step below has to exclude them explicitly. skills/fixtures/ is
+// the only exclusion; everything else under skills/ is published.
+const COPY_SKIP = new Set(['fixtures']);
+
 // skill_builder.md hardcodes an absolute local path. Rewrite to a relative
 // one so publishing the folder does not leak the machine layout.
 const SANITIZE = [
@@ -141,6 +148,10 @@ if (haveTato) {
         const abs = join(dir, entry.name);
         const relPath = rel ? `${rel}/${entry.name}` : entry.name;
         if (entry.isDirectory()) {
+          if (COPY_SKIP.has(relPath)) {
+            copyReport.push(`  excluded ${from}/${relPath} (never published)`);
+            continue;
+          }
           mkdirSync(join(dest, relPath), { recursive: true });
           walk(abs, relPath);
         } else {
@@ -424,13 +435,71 @@ function renderTato() {
 
 // ---------------------------------------------------------------- assemble
 
+// Inline SVG rather than raster images: nothing to load, nothing to fake, and
+// it stays crisp at any size. The orbit diagram echoes what the agent system
+// actually does — a request hitting a hub and being routed outward.
+const heroArt = `
+<svg class="hero-art" viewBox="0 0 210 190" role="img" aria-label="A request entering a central hub and being routed to a ring of connected skills">
+  <defs>
+    <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="var(--accent)" stop-opacity=".38"/>
+      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="105" cy="95" r="74" fill="url(#hubGlow)"/>
+  <g class="orbit" fill="none" stroke="var(--line)" stroke-width="1">
+    <circle cx="105" cy="95" r="62"/>
+    <circle cx="105" cy="95" r="40" stroke-dasharray="3 5"/>
+  </g>
+  <g class="spin" fill="none" stroke="var(--accent)" stroke-width="1" stroke-opacity=".5" stroke-dasharray="26 300" stroke-linecap="round">
+    <circle cx="105" cy="95" r="62"/>
+  </g>
+  <g stroke="var(--line)" stroke-width="1">
+    <line x1="105" y1="95" x2="105" y2="33"/>
+    <line x1="105" y1="95" x2="159" y2="126"/>
+    <line x1="105" y1="95" x2="51" y2="126"/>
+  </g>
+  <g class="pulse">
+    <circle cx="105" cy="33" r="6" fill="var(--accent)" fill-opacity=".85"/>
+    <circle cx="159" cy="126" r="6" fill="var(--accent)" fill-opacity=".55"/>
+    <circle cx="51" cy="126" r="6" fill="var(--accent)" fill-opacity=".55"/>
+  </g>
+  <circle cx="105" cy="95" r="19" fill="var(--panel2, var(--panel-2))" stroke="var(--accent)" stroke-width="1.5"/>
+  <text x="105" y="91" text-anchor="middle" font-family="ui-monospace, monospace" font-size="8" fill="var(--accent)">ROUTER</text>
+  <text x="105" y="101" text-anchor="middle" font-family="ui-monospace, monospace" font-size="7" fill="var(--muted)">${(tato.skills || []).length || 0} SKILLS</text>
+</svg>`;
+
 const masthead = `
-<header class="masthead">
-  ${hasName ? `<h1>${esc(owner.name)}</h1>` : '<h1 class="unnamed">Portfolio</h1>'}
-  ${isFilled(owner.title) ? `<p class="title">${esc(owner.title)}</p>` : ''}
-  ${isFilled(owner.bio) ? `<p class="bio">${esc(owner.bio)}</p>` : ''}
-  ${hasLocation ? `<p class="loc">${esc(owner.location)}</p>` : ''}
+<header class="hero">
+  <div class="hero-copy">
+    ${hasName ? `<h1>${esc(owner.name)}</h1>` : '<h1 class="unnamed">Portfolio</h1>'}
+    ${isFilled(owner.title) ? `<p class="title">${esc(owner.title)}</p>` : ''}
+    ${isFilled(owner.bio) ? `<p class="bio">${esc(owner.bio)}</p>` : ''}
+    ${hasLocation ? `<p class="loc">${esc(owner.location)}</p>` : ''}
+  </div>
+  ${heroArt}
 </header>`;
+
+const VALUE_ICONS = {
+  'plain-language': '<svg class="value-icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h11l-1.5 3.5L14 12H3z"/><path d="M17 9h4M17 13h4M3 17h9"/></svg>',
+  'domain-plus-code': '<svg class="value-icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v6h6"/><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M9 14l2 2 4-4"/></svg>',
+  'accountable': '<svg class="value-icon" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg>',
+};
+
+const valueProps = (inv.client_value || []).filter((v) => isFilled(v.headline) && isFilled(v.body)).length
+  ? `
+<section>
+  <h2>What I do for clients</h2>
+  <div class="value">
+    ${(inv.client_value || []).filter((v) => isFilled(v.headline) && isFilled(v.body)).map((v) => `
+    <article class="value-card">
+      ${VALUE_ICONS[v.id] || VALUE_ICONS['plain-language']}
+      <h4>${esc(v.headline)}</h4>
+      <p>${esc(v.body)}</p>
+    </article>`).join('')}
+  </div>
+</section>`
+  : '';
 
 const nav = `
 <nav class="nav">
@@ -487,7 +556,13 @@ const html = `<!DOCTYPE html>
   code { font-family: var(--mono); font-size: 0.9em; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
   .caveat { color: var(--muted); font-size: 13px; border-left: 2px solid var(--line); background: var(--panel-2); padding: 10px 14px; border-radius: 0 7px 7px 0; max-width: 74ch; }
 
-  .nav { display: flex; gap: 18px; flex-wrap: wrap; padding: 14px 0 0; }
+  .nav {
+    position: sticky; top: 0; z-index: 20; display: flex; gap: 18px; flex-wrap: wrap;
+    padding: 12px 24px; margin: 0 -24px;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
   .nav a { color: var(--muted); text-decoration: none; font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; }
   .nav a:hover { color: var(--text); }
 
@@ -497,6 +572,35 @@ const html = `<!DOCTYPE html>
   .title { color: var(--accent); margin: 0 0 18px; }
   .bio { color: var(--muted); max-width: 62ch; margin: 0 0 10px; }
   .loc { color: var(--muted); margin: 0; font-size: 13px; }
+
+  /* --- hero --- */
+  .hero { display: grid; grid-template-columns: 1fr 210px; gap: 32px; align-items: center; margin: 8px 0 6px; }
+  .hero-copy h1 { font-size: 42px; line-height: 1.1; margin: 0 0 10px; }
+  .hero-art { width: 210px; height: 190px; }
+  .hero-art .spin { transform-origin: 105px 95px; animation: spin 26s linear infinite; }
+  .hero-art .orbit { transform-origin: 105px 95px; animation: spin 40s linear infinite reverse; }
+  .hero-art .pulse { animation: pulse 3.4s ease-in-out infinite; transform-origin: center; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-art .spin, .hero-art .orbit, .hero-art .pulse { animation: none; }
+    .hero-art .pulse { opacity: .9; }
+  }
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-art { display: none; }
+    .hero-copy h1 { font-size: 32px; }
+  }
+
+  /* --- value props --- */
+  .value { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin: 0 0 8px; }
+  .value-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px; border-top: 2px solid var(--accent);
+  }
+  .value-icon { width: 26px; height: 26px; margin-bottom: 12px; display: block; }
+  .value-card h4 { font-size: 16px; margin: 0 0 8px; }
+  .value-card p { margin: 0; font-size: 14px; color: var(--muted); }
 
   .project { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin-bottom: 18px; }
   .project-head, .repo-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
@@ -601,8 +705,10 @@ const html = `<!DOCTYPE html>
 <div class="wrap">
 ${nav}
 ${masthead}
+${valueProps}
 <section id="work">
 <h2>Selected work</h2>
+<p class="lede">Four projects, in the order I built them. Each one links to its source, and the status badge says exactly what runs today — no project is marked live unless it is.</p>
 ${projects.map(renderProject).join('\n')}
 </section>
 ${renderTato()}
