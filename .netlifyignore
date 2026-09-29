@@ -1,0 +1,7 @@
+# Never publish these.
+.git
+node_modules
+.netlify
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,23 @@
+# Netlify configuration for the portfolio site.
+#
+# The site is pre-built by build.mjs, so there is no build step on Netlify.
+# index.html and tato/ are committed, and Netlify just serves them.
+#
+# build.mjs reads ../.tato, which does not exist on Netlify's build servers —
+# that is why the site is committed pre-built rather than compiled remotely.
+
+[build]
+  publish = "."
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# The vendored skill index is a large static JSON file; let it cache hard.
+[[headers]]
+  for = "/tato/config/repo_skills.json"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"

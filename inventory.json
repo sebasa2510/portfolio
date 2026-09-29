@@ -1,5 +1,5 @@
 {
-  "_comment": "Portfolio inventory for Lab 02. Consumed by the Session 05 site builder. live_url is filled in once each project is deployed - placeholders are marked TODO.",
+  "_comment": "Portfolio inventory for Lab 02. Consumed by build.mjs, which renders index.html from this file. live_url is filled in once each project is deployed - placeholders are marked TODO and the builder omits them rather than rendering the placeholder text.",
 
   "owner": {
     "name": "TODO: your full name",
@@ -121,10 +121,15 @@
 
   "open_items": [
     "owner.name - your full name for the page header",
+    "owner.location - city, state",
     "brand.colors / brand.fonts - comes from the Session 05 brand kit review",
     "live_url on all four projects - only deployable things should be listed as live",
-    "Session 01 produced no project and is intentionally omitted",
-    "lead-scoring-agent is a written spec, not running code - decide whether to publish the spec as-is, or build a small demo of the scoring logic so the page can show it working"
+    "Session 01 produced no project and is intentionally omitted"
+  ],
+  "resolved_items": [
+    "lead-scoring-agent presentation - RESOLVED: presented as a written specification, with lead-score-demo.html linked as the working proof of the scoring logic. The demo already existed, so no new build was needed.",
+    "site builder - RESOLVED: build.mjs reads this file and writes index.html. Run `node build.mjs` after any edit here. It omits unfilled fields rather than printing TODOs, and reports what is still missing on stdout.",
+    "brand fallback - RESOLVED: the builder falls back to the same neutral dark palette the demo already uses, and switches to brand.colors automatically once the brand kit review runs."
   ],
   "accuracy_notes": [
     "lead-scoring-agent: Section 13 of the spec still contains <placeholder> config values, and there is no code, database or deployment. Describe it as a design or specification, not a shipped product - a reviewer who asks to see it running will find nothing.",
