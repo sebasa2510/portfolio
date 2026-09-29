@@ -78,7 +78,9 @@ const tato = haveTato
     }
   : { skills: [], repos: [], repoTotals: {}, index: null };
 
-const TATO_REPO_URL = 'https://github.com/sebasa2510/.tatocreativehubclass';
+// The .tato agent system's own class repo is private, so the public site
+// links to the copy published in this repo instead.
+const TATO_REPO_URL = 'https://github.com/sebasa2510/portfolio';
 
 // ------------------------------------------------------------------ theme
 
