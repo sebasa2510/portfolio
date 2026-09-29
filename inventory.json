@@ -2,11 +2,11 @@
   "_comment": "Portfolio inventory for Lab 02. Consumed by build.mjs, which renders index.html from this file. live_url is filled in once each project is deployed - placeholders are marked TODO and the builder omits them rather than rendering the placeholder text.",
 
   "owner": {
-    "name": "TODO: your full name",
+    "name": "Sebastian Alonso",
     "title": "Tax Professional & Junior Software Developer",
     "bio": "I'm a tax professional and junior software developer working where finance meets technology. Since 2022 I've handled tax preparation, compliance, and client service, and I'm now applying that domain knowledge to software — building reliable, user-centered tools for real business problems.",
     "bio_sentences": 3,
-    "location": "TODO: city, state"
+    "location": "Hialeah, FL"
   },
 
   "brand": {
